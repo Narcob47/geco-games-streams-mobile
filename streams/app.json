@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "streams",
+    "slug": "streams",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/5.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/5.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.narcoa47.streams"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/5.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/5.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "ec87e2e2-d403-4175-94ab-5ffb2a5cd573"
+      }
+    }
+  }
+}
