@@ -13,19 +13,19 @@ const onboardingSlides = [
     id: '1',
     title: 'Welcome to Arts Plus',
     description: 'A Geco Games Limited Streaming Service.',
-    image: require('@/assets/images/onboarding/2.png'), // Replace with your image path
+    image: require('@/assets/images/onboarding/3.png'), // Replace with your image path
   },
   {
     id: '2',
     title: 'A place to enjoy your entertainment',
     description: 'Simple and intuitive user interface.',
-    image: require('@/assets/images/onboarding/3.png'), // Replace with your image path
+    image: require('@/assets/images/onboarding/4.png'), // Replace with your image path
   },
   {
     id: '3',
     title: 'Get Started',
     description: 'Join us and start your journey today.',
-    image: require('@/assets/images/onboarding/4.png'), // Replace with your image path
+    image: require('@/assets/images/onboarding/5.png'), // Replace with your image path
   },
 ];
 

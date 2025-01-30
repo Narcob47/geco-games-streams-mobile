@@ -1,64 +1,103 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, ScrollView, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { fetchSeries, handleWatchNow } from '../middleware/api';
+import { fetchMovies, handleWatchMovieNow } from '../middleware/api';
 
 const HomeScreen: React.FC = () => {
-  const recommendedMovies = [
-    { id: '1', title: 'Episode 1', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '2', title: 'Episode 2', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '3', title: 'Episode 3', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '4', title: 'Episode 4', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '5', title: 'Episode 5', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '6', title: 'Episode 6', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '7', title: 'Episode 7', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '8', title: 'Episode 8', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '9', title: 'Episode 9', image: require('@/assets/images/onboarding/1.jpg') },
-    { id: '10', title: 'Episode 10', image: require('@/assets/images/onboarding/1.jpg') },
-  ];
+  interface Series {
+    id: string;
+    stream_url: string;
+    title: string;
+    descriptions: string;
+    age_rating: string;
+    category: string;
+    duration: string;
+    genres: string;
+  }
 
-  const genreCategories = [
-    {
-      genre: 'Action',
-      movies: [
-        { id: '1', title: 'Action Movie 1', image: require('@/assets/images/onboarding/1.jpg') },
-        { id: '2', title: 'Action Movie 2', image: require('@/assets/images/onboarding/1.jpg') },
-        { id: '1', title: 'Action Movie 1', image: require('@/assets/images/onboarding/1.jpg') },
-        { id: '2', title: 'Action Movie 2', image: require('@/assets/images/onboarding/1.jpg') },
-      ],
-    },
-    {
-      genre: 'Drama',
-      movies: [
-        { id: '3', title: 'Drama Movie 1', image: require('@/assets/images/onboarding/1.jpg') },
-        { id: '4', title: 'Drama Movie 2', image: require('@/assets/images/onboarding/1.jpg') },
-        { id: '1', title: 'Action Movie 1', image: require('@/assets/images/onboarding/1.jpg') },
-        { id: '2', title: 'Action Movie 2', image: require('@/assets/images/onboarding/1.jpg') },
-      ],
-    },
-  ];
+  interface Movies {
+    id: string;
+    stream_url: string;
+    title: string;
+    descriptions: string;
+    age_rating: string;
+    category: string;
+    duration: string;
+    genres: string;
+  }
+  
+  const [series, setSeries] = useState<Series[]>([]);
+  const [movie, setMovies] = useState<Movies[]>([]);
 
-  const renderRecommendedItem = ({ item }: any) => (
-    <View style={styles.recommendedItem}>
-      <Image source={item.image} style={styles.recommendedImage} />
-      <Text style={styles.recommendedTitle}>{item.title}</Text>
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchSeries();
+        setSeries(data);
+      } catch (error) {
+        console.error('Error fetching movies:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchMovies();
+        setMovies(data);
+      } catch (error) {
+        console.error('Error fetching movies:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleWatchNowClick = (seriesId: string) => {
+    handleWatchNow(navigation, seriesId);
+  };
+
+  const handleWatchMovieNowClick = (movieId: string) => {
+    handleWatchMovieNow(navigation, movieId);
+  };
+
+  const renderSeriesItem = ({ item }: any) => (
+    <View style={styles.movieCard}>
+      <Image source={{ uri: item.stream_url }} style={styles.movieImage} />
+      <View style={styles.movieInfo}>
+        <Text style={styles.movieTitle}>{item.title}</Text>
+        {/* <Text style={styles.movieDescription}>{item.descriptions}</Text> */}
+        <Text style={styles.movieDetails}>{item.age_rating} | {item.category} | {item.duration}</Text>
+        <Text style={styles.movieGenres}>{item.genres}</Text>
+        <TouchableOpacity style={styles.watchButton} onPress={() => handleWatchNowClick(item.id)}>
+          <Text style={styles.watchButtonText}>Watch now</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
-  const renderGenreSection = () => (
-    genreCategories.map((category) => (
-      <View key={category.genre} style={styles.genreSection}>
-        <Text style={styles.genreTitle}>{category.genre}</Text>
-        <FlatList
-          data={category.movies}
-          renderItem={renderRecommendedItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          contentContainerStyle={styles.recommendedList}
-          showsHorizontalScrollIndicator={false}
-        />
+  const renderMovieItem = ({ item }: any) => (
+    <View style={styles.movieCard}>
+      <Image source={{ uri: item.image }} style={styles.movieImage} />
+      <View style={styles.movieInfo}>
+        <Text style={styles.movieTitle}>{item.title}</Text>
+        <Text style={styles.release}>{item.release_date}</Text>
+        {/* <Text style={styles.movieDescription}>{item.description}</Text> */}
+        
+        <Text style={styles.movieDetails}>{item.age_rating} | {item.category} | {item.duration}</Text>
+        <Text style={styles.movieGenres}>{item.genre}</Text>
+        <TouchableOpacity style={styles.watchButton} onPress={() => handleWatchMovieNowClick(item.id)}>
+          <Text style={styles.watchButtonText}>Watch now</Text>
+        </TouchableOpacity>
       </View>
-    ))
+    </View>
   );
 
   return (
@@ -95,17 +134,25 @@ const HomeScreen: React.FC = () => {
           </View>
         </ImageBackground>
 
-        <Text style={styles.sectionTitle}>Episode Guide</Text>
+        <Text style={styles.sectionTitle}>Series</Text>
 
         <FlatList
-          data={recommendedMovies}
-          renderItem={renderRecommendedItem}
-          keyExtractor={(item) => item.id}
+          data={series}
+          renderItem={renderSeriesItem}
+          keyExtractor={(item) => item.id.toString()}
           horizontal
-          contentContainerStyle={styles.recommendedList}
+          contentContainerStyle={styles.movieList}
           showsHorizontalScrollIndicator={false}
         />
-        {/* {renderGenreSection()} */}
+        <Text style={styles.sectionTitle}>Movies</Text>
+        <FlatList
+          data={movie}
+          renderItem={renderMovieItem}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          contentContainerStyle={styles.movieList}
+          showsHorizontalScrollIndicator={false}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -123,7 +170,7 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     width: '100%',
-    height: 400,
+    height: 215,
     justifyContent: 'flex-end',
   },
   movieInfoContainer: {
@@ -133,16 +180,21 @@ const styles = StyleSheet.create({
   releaseDate: {
     color: '#FFFFFF',
     fontSize: 14,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   genre: {
     color: '#FFFFFF',
     fontSize: 14,
     marginBottom: 16,
   },
+  release: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    marginBottom: 16,
+  },
   movieTitle: {
     color: '#FFFFFF',
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 8,
   },
@@ -154,12 +206,14 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     gap: 16,
+    
   },
   watchButton: {
     backgroundColor: '#09E577FF',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
+    marginTop: 8,
   },
   watchButtonText: {
     color: '#FFFFFF',
@@ -178,36 +232,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  recommendedList: {
+  movieList: {
     padding: 16,
   },
-  recommendedItem: {
+  movieCard: {
     marginRight: 16,
-    alignItems: 'center',
-  },
-  recommendedImage: {
-    width: 100,
-    height: 150,
+    width: 150,
     borderRadius: 8,
-    marginBottom: 8,
+    overflow: 'hidden',
+    backgroundColor: '#2C2C2E',
   },
-  recommendedTitle: {
+  movieImage: {
+    width: '100%',
+    height: 150,
+  },
+  movieInfo: {
+    padding: 8,
+  },
+  movieDescription: {
     color: '#FFFFFF',
     fontSize: 14,
+  },
+  movieDetails: {
+    color: '#AAAAAA',
+    fontSize: 12,
+    marginVertical: 4,
+  },
+  movieGenres: {
+    color: '#AAAAAA',
+    fontSize: 12,
   },
   sectionTitle: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 16,
-    marginVertical: 8,
-  },
-  genreSection: {
-    marginBottom: 16,
-  },
-  genreTitle: {
-    color: '#FFFFFF',
-    fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 16,
     marginVertical: 8,
